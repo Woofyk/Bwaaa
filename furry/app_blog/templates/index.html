@@ -1,38 +1,62 @@
-<!DOCTYPE html>
-<html lang=”uk”>
-<head>
-    <title>Blog</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-</head>
-<body>
-Категорії
-{% if categories %}
-{% for item in categories %}
-<div>
-    <a href="{{ item.get_absolute_url }}">
-        <h4>{{ item.category }}</h4>
-       </a>
-</div>
-{% endfor %}
-{% endif %}
-{% if articles %}
-{% for item in articles %}
-<div>
-    <a href="{{ item.get_absolute_url }}">
-        <h4>{{ item.title }}</h4>
-    </a>
-    <h5>
-        {{ item.pub_date|date:"j E Y"|safe|linebreaks }}
-    </h5>
-    <p>
-        {{ item.description|safe|escape|striptags|truncatewords_html:32 }}
-    </p>
-</div>
-{% endfor %}
-{% endif %}
-    <a href="{% url 'articles-list' %}">
-        <h4>Всі публікації</h4>
-    </a>
+{% extends "base.html" %}
+{% load static %}
 
-</body>
-</html>
+{% block content %}
+{% spaceless %}
+
+{% if categories %}
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+        <ul class="nav navbar-nav">
+            {% for item in categories %}
+            <li>
+                <a href="{{ item.get_absolute_url }}">{{ item.category }}</a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</nav>
+{% endif %}
+
+<div class="row">
+    <div class="col-md-12">
+        
+        <h2>Останні публікації</h2>
+
+        {% if articles %}
+            {% for item in articles %}
+            <div class="panel panel-default article-block">
+                <div class="panel-heading">
+                    <a href="{{ item.get_absolute_url }}">
+                        <h3 class="panel-title">{{ item.title }}</h3>
+                    </a>
+                </div>
+                <div class="panel-body">
+                    <p>
+                        {{ item.description|striptags|truncatewords:32 }}
+                    </p>
+                </div>
+                <div class="panel-footer">
+                    <small>{{ item.pub_date|date:"j E Y" }}</small>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="alert alert-info">
+                <p>Наразі статей немає.</p>
+            </div>
+        {% endif %}
+
+        <hr>
+        
+        <a href="{% url 'articles-list' %}" class="btn btn-primary btn-lg">
+            Всі публікації
+        </a>
+        
+        <br><br>
+
+    </div>
+</div>
+
+{% endspaceless %}
+{% endblock %}
